@@ -81,7 +81,6 @@ Please provide a detailed answer based on the given context."""
     return response.choices[0].message.content
 
 st.title("Rag chatbot using Meta Llama, Groq, and Pinecone")
-st.header("V1")
 st.subheader("Created by Vasudev Nair")
 
 uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
