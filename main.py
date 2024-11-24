@@ -5,8 +5,6 @@ import os
 import PyPDF2
 import streamlit as st
 
-st.rerun()
-
 # Initialize Groq client
 groq_client = Groq(api_key=os.environ['GROQ_API_KEY'])
 
