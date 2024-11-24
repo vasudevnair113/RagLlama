@@ -92,11 +92,14 @@ uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 if uploaded_file is not None:
     # Clear session state
     for key in list(st.session_state.keys()):
-        del st.session_state[key]
+        if key != "pdf_uploader":
+            del st.session_state[key]
 
-    st.write("Indexing PDF...")
-    index_pdf(uploaded_file)
-    st.write("PDF indexed successfully!")
+    if 'pdf_indexed' not in st.session_state:
+        st.write("Indexing PDF...")
+        index_pdf(uploaded_file)
+        st.session_state['pdf_indexed'] = True
+        st.write("PDF indexed successfully!")
 
     query = st.text_input("Enter your query about the PDF:")
     if query:
