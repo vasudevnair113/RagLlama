@@ -1,0 +1,5 @@
+pinecone
+groq
+sentence_transformers
+PyPDF2
+streamlit
