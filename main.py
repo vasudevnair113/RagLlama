@@ -46,7 +46,12 @@ def index_pdf(pdf_path):
     for i, chunk in enumerate(chunks):
         embedding = model.encode(chunk).tolist()
         vectors.append((str(i), embedding, {"text": chunk}))
-    index.upsert(vectors=vectors)
+    
+    # Batch upsert
+    batch_size = 100  # Adjust this value based on your needs
+    for i in range(0, len(vectors), batch_size):
+        batch = vectors[i:i+batch_size]
+        index.upsert(vectors=batch)
 
 def query_pdf(query):
     query_embedding = model.encode(query).tolist()
