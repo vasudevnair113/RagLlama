@@ -40,8 +40,6 @@ def chunk_text(text, chunk_size=1000):
     return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
 
 def index_pdf(pdf_path):
-    # Clear existing vectors before indexing a new PDF
-    index.delete(delete_all=True)
     text = extract_text_from_pdf(pdf_path)
     chunks = chunk_text(text)
     vectors = []
@@ -90,9 +88,16 @@ st.subheader("Created by Vasudev Nair")
 uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
 if uploaded_file is not None:
-    st.write("Indexing PDF...")
-    index_pdf(uploaded_file)
-    st.write("PDF indexed successfully!")
+    # Clear session state except for the uploaded file
+    for key in list(st.session_state.keys()):
+        if key != "pdf_uploader":
+            del st.session_state[key]
+
+    if 'pdf_indexed' not in st.session_state:
+        st.write("Indexing PDF...")
+        index_pdf(uploaded_file)
+        st.session_state['pdf_indexed'] = True
+        st.write("PDF indexed successfully!")
 
     query = st.text_input("Enter your query about the PDF:")
     if query:
