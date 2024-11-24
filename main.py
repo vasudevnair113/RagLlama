@@ -40,18 +40,24 @@ def chunk_text(text, chunk_size=1000):
     return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
 
 def index_pdf(pdf_path):
+    # Clear existing vectors before indexing a new PDF
+    index.delete(delete_all=True)
     text = extract_text_from_pdf(pdf_path)
     chunks = chunk_text(text)
     vectors = []
+
+    progress_bar = st.progress(0)
     for i, chunk in enumerate(chunks):
         embedding = model.encode(chunk).tolist()
         vectors.append((str(i), embedding, {"text": chunk}))
+        progress_bar.progress((i + 1) / len(chunks))
     
     # Batch upsert
     batch_size = 100  # Adjust this value based on your needs
     for i in range(0, len(vectors), batch_size):
         batch = vectors[i:i+batch_size]
         index.upsert(vectors=batch)
+    progress_bar.empty()
 
 def query_pdf(query):
     query_embedding = model.encode(query).tolist()
@@ -84,6 +90,10 @@ st.subheader("Created by Vasudev Nair")
 uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
 if uploaded_file is not None:
+    # Clear session state
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+
     st.write("Indexing PDF...")
     index_pdf(uploaded_file)
     st.write("PDF indexed successfully!")
